@@ -16,7 +16,7 @@ namespace WebApi.Controllers
             _productsRepository = productRepository;
         }
 
-        [HttpGet()]
+        [HttpGet]
         public IActionResult GetAllProducts()
         {
             string baseUrl = $"{Request.Scheme}://{Request.Host}";
@@ -47,12 +47,17 @@ namespace WebApi.Controllers
             return Ok(products);
         }
 
-        [HttpGet("Search")]
-        public IActionResult SearchProduct()
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
         {
-            return Ok(new {
-                Results = new string[]{ "Test" }
-            });
+            return Ok();
+        }
+
+        [HttpGet("Search")]
+        public IActionResult SearchProduct([FromQuery] int category_id, int? product_id)
+        {
+            //kalo ada product_id
+            return product_id != null ? Ok("Ada product ID") : Ok("Tidak Ada product ID");
         }
 
         [HttpPost]
