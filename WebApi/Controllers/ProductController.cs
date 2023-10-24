@@ -12,16 +12,30 @@ namespace WebApi.Controllers
     public class ProductController : ControllerBase
     {
         private IProductRepository _productsRepository;
-        private CategoryRepository _categoryRepository;
-        public ProductController(IProductRepository productRepository, CategoryRepository categoryRepository) { 
+        public ProductController(IProductRepository productRepository) { 
             _productsRepository = productRepository;
-            _categoryRepository = categoryRepository;
         }
 
         [HttpGet()]
         public IActionResult GetAllProducts()
         {
+            string baseUrl = $"{Request.Scheme}://{Request.Host}";
+
             List<Product> products = _productsRepository.GetAll();
+
+            foreach (var product in products)
+            {
+                if (product.Images != null)
+                {
+                    foreach (var image in product.Images)
+                    {
+                        if (image != null)
+                        {
+                            image.ImageUrl = baseUrl + "/" + image.ImageUrl;
+                        }
+                    }
+                }
+            }
 
             //product 1 = product image 5
             //product 2 = product image 5

@@ -82,5 +82,77 @@ namespace WebApi.Repositories
                 conn.Close();
             }
         }
+
+        public void SetActive(int productId, bool isActive)
+        {
+            //get connection to database
+            MySqlConnection conn = new MySqlConnection(_connStr);
+            try
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand("UPDATE product_image SET is_active=@IsActive WHERE id=@Id", conn);
+
+                cmd.Parameters.AddWithValue("@IsActive", isActive ? 1 : 0);
+                cmd.Parameters.AddWithValue("@Id", productId);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                //required
+                conn.Close();
+            }
+        }
+
+        public bool TestTransaction()
+        {
+            bool isSuccess = false;
+
+            using(MySqlConnection conn = new MySqlConnection(_connStr))
+            {
+                conn.Open();
+
+                MySqlTransaction transaction = conn.BeginTransaction();
+
+                //start transaction
+                try
+                {
+                    //insert new product image
+                    using (var cmd = new MySqlCommand("INSERT INTO product_image(product_id, image_url) VALUES (@ProductId, @ImageUrl)", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@ProductId", 1);
+                        cmd.Parameters.AddWithValue("@ImageUrl", "/images/testing.png");
+                        cmd.Transaction = transaction;
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    //update product
+                    using (var cmd = new MySqlCommand("UPDATE product SET name='[Updated]' WHERE id=@Id", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", 1);
+                        cmd.Transaction = transaction;
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    transaction.Commit();
+
+                    isSuccess = true;
+                }
+                catch (Exception ex)
+                {
+                    //if fail then rollback
+                    transaction.Rollback();
+                }
+                finally {
+                    conn.Close();
+                }
+
+                return isSuccess;
+            }
+        }
     }
 }

@@ -68,16 +68,18 @@ namespace WebApi.Repositories
                 conn.Open();
                 // able to query after open
                 // Perform database operations
-                MySqlCommand cmd = new MySqlCommand("SELECT p.id, name, description, price, pi.image_url FROM product p LEFT JOIN product_image pi ON p.id=pi.product_id", conn);
+                MySqlCommand cmd = new MySqlCommand("SELECT p.id, name, description, price, pi.id as image_id, pi.image_url, pi.is_active FROM product p LEFT JOIN product_image pi ON p.id=pi.product_id", conn);
 
                 MySqlDataReader reader = cmd.ExecuteReader();
                 while(reader.Read())
                 {
                     int id = reader.GetInt32("id");
+                    int imageId = reader.GetInt32("image_id");
                     string name = reader.GetString("name");
                     string description = reader.GetString("description");
                     int price = reader.GetInt32("price");
                     string imageUrl = reader.GetString("image_url");
+                    bool isActive = reader.GetBoolean("is_active");
 
                     Product? existingProduct = products.Where(x => x.Id == id).FirstOrDefault();
                     if (existingProduct == null)
@@ -90,15 +92,21 @@ namespace WebApi.Repositories
                             Price = price,
                             Images = new List<ProductImage>() { 
                                 new ProductImage{ 
-                                    ImageUrl = imageUrl
+                                    Id = imageId,
+                                    ProductId = id,
+                                    ImageUrl = imageUrl,
+                                    IsActive = isActive,
                                 }
                             }
                         });
                     }
                     else
                     {
-                        existingProduct.Images.Add(new ProductImage { 
-                            ImageUrl = imageUrl
+                        existingProduct.Images.Add(new ProductImage {
+                            Id = imageId,
+                            ProductId = id,
+                            ImageUrl = imageUrl,
+                            IsActive = isActive,
                         });
                     }
                 }

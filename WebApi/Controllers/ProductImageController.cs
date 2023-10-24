@@ -46,7 +46,7 @@ namespace WebApi.Controllers
 
             //get filename
             string fileName = Guid.NewGuid().ToString() + ext; //pasti unik
-            string uploadDir = "images"; //foldering biar rapih
+            string uploadDir = "uploads"; //foldering biar rapih
             string physicalPath = $"wwwroot/{uploadDir}";
             //saving image
             var filePath = Path.Combine(_webHostEnvironment.ContentRootPath, physicalPath, fileName);
@@ -54,13 +54,34 @@ namespace WebApi.Controllers
             await image.CopyToAsync(stream);
 
             //create url path
-            string baseUrl = $"{Request.Scheme}://{Request.Host}";
-            string fileUrlPath = $"{baseUrl}/{uploadDir}/{fileName}";
+            string fileUrlPath = $"{uploadDir}/{fileName}";
 
             // TODO: save product image to database
             _productImageRepository.Insert(data.ProductId, fileUrlPath);
 
             return Ok();
+        }
+
+        [HttpPatch("{id}/Activate")]
+        public IActionResult Activate(int id)
+        {
+            _productImageRepository.SetActive(id, true);
+
+            return Ok();
+        }
+
+        [HttpPatch("{id}/Deactive")]
+        public IActionResult Deactive(int id)
+        {
+            _productImageRepository.SetActive(id, false);
+
+            return Ok();
+        }
+
+        [HttpGet("TestTransaction")]
+        public IActionResult TestTransaction()
+        {
+            return Ok(_productImageRepository.TestTransaction());
         }
     }
 }
