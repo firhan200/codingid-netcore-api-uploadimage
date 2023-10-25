@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Dto;
 using WebApi.Models;
@@ -60,6 +61,7 @@ namespace WebApi.Controllers
             return product_id != null ? Ok("Ada product ID") : Ok("Tidak Ada product ID");
         }
 
+        [Authorize]
         [HttpPost]
         public IActionResult CreateProduct([FromBody] CreateProductDto data)
         {
