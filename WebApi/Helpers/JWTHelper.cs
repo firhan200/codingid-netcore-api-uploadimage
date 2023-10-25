@@ -8,13 +8,14 @@ namespace WebApi.Helpers
 {
     public static class JWTHelper
     {
-        public static string KEY = "179d3a7c1a8ed4ae1d7d375ce1411730ce869f26a14a9cf68bd5de678ba9e14174c6eb8653525a005ba2c422a6005bedace17132853b5cf527b82580fec5dd3f";
-        public static string Generate(int userId)
+        public static string KEY = "7ed4169fc5ef61270f840f11c2daf7c6bc5a282e9ffbf87e8f6d70b93aa873309770e4152bff4a6d531313e6206b38dab67d88f6aeba677280c52e35c5e716ab";
+        public static string Generate(int userId, string role)
         {
             //init claims payload
             List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.Sid, userId.ToString()),
+                new Claim(ClaimTypes.Role, role)
             };
 
             //set jwt config

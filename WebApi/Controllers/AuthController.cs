@@ -31,7 +31,7 @@ namespace WebApi.Controllers
             }
 
             //create token
-            string token = JWTHelper.Generate(user.Id);
+            string token = JWTHelper.Generate(user.Id, user.Role);
 
             return Ok(token);
         }

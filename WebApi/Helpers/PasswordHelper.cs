@@ -3,6 +3,7 @@ using System.Text;
 
 namespace WebApi.Helpers
 {
+    //static tidak perlu new
     public static class PasswordHelper
     {
         public static string EncryptPassword(string rawPassword)

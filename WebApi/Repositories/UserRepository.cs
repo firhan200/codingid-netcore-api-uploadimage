@@ -25,7 +25,7 @@ namespace WebApi.Repositories
             try
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("SELECT id, email FROM user WHERE email=@Email and password=@Password", conn);
+                MySqlCommand cmd = new MySqlCommand("SELECT id, email, role FROM user WHERE email=@Email and password=@Password", conn);
 
                 cmd.Parameters.AddWithValue("@Email", email);
                 cmd.Parameters.AddWithValue("@Password", password);
@@ -35,6 +35,7 @@ namespace WebApi.Repositories
                     user = new User { 
                         Id = reader.GetInt32("id"),
                         Email = reader.GetString("email"),
+                        Role = reader.GetString("role"),
                     };
                 }
             }

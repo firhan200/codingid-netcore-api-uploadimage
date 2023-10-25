@@ -17,6 +17,7 @@ namespace WebApi.Controllers
             _productsRepository = productRepository;
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult GetAllProducts()
         {
@@ -61,7 +62,7 @@ namespace WebApi.Controllers
             return product_id != null ? Ok("Ada product ID") : Ok("Tidak Ada product ID");
         }
 
-        [Authorize]
+        [Authorize(Roles = "ADMIN")]
         [HttpPost]
         public IActionResult CreateProduct([FromBody] CreateProductDto data)
         {
