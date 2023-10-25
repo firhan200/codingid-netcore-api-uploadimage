@@ -6,7 +6,7 @@ namespace WebApi.Repositories.Interfaces
     {
         List<Product> GetAll();
         Product? GetById(int id);
-        void Create(string name, string description, int price);
+        void Create(string name, string description, int price, string image);
         bool Update(int id, string name, string description, int price);
     }
 }

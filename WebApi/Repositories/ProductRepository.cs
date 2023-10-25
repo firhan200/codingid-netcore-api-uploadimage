@@ -122,18 +122,19 @@ namespace WebApi.Repositories
             return products;
         }
 
-        public void Create(string name, string description, int price)
+        public void Create(string name, string description, int price, string image)
         {
             //get connection to database
             MySqlConnection conn = new MySqlConnection(connStr);
             try
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("INSERT INTO product(name, description, price) VALUES (@Name, @Description, @Price)", conn);
+                MySqlCommand cmd = new MySqlCommand("INSERT INTO product(name, description, price, image) VALUES (@Name, @Description, @Price, @Image)", conn);
 
                 cmd.Parameters.AddWithValue("@Name", name);
                 cmd.Parameters.AddWithValue("@Description", description);
                 cmd.Parameters.AddWithValue("@Price", price);
+                cmd.Parameters.AddWithValue("@Image", image);
 
                 cmd.ExecuteNonQuery();
             }

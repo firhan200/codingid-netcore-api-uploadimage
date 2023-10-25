@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Dto;
 using WebApi.Models;
 using WebApi.Repositories;
 using WebApi.Repositories.Interfaces;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WebApi.Controllers
 {
@@ -12,9 +14,12 @@ namespace WebApi.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private IProductRepository _productsRepository;
-        public ProductController(IProductRepository productRepository) { 
+        public ProductController(IProductRepository productRepository, IWebHostEnvironment webHostEnvironment)
+        {
             _productsRepository = productRepository;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -63,9 +68,27 @@ namespace WebApi.Controllers
 
         [Authorize(Roles = "ADMIN")]
         [HttpPost]
-        public IActionResult CreateProduct([FromBody] CreateProductDto data)
+        public async Task<IActionResult> CreateProduct([FromForm] CreateProductDto data)
         {
-            _productsRepository.Create(data.Name, data.Description, data.Price);
+            /*================== upload image ==================*/
+            var image = data.Image;
+
+            var ext = Path.GetExtension(image.FileName).ToLowerInvariant(); //.jpg
+
+            //get filename
+            string fileName = Guid.NewGuid().ToString() + ext; //pasti unik
+            string uploadDir = "uploads"; //foldering biar rapih
+            string physicalPath = $"wwwroot/{uploadDir}";
+            //saving image
+            var filePath = Path.Combine(_webHostEnvironment.ContentRootPath, physicalPath, fileName);
+            using var stream = System.IO.File.Create(filePath);
+            await image.CopyToAsync(stream);
+
+            //create url path
+            string fileUrlPath = $"{uploadDir}/{fileName}";
+            /*================== upload image ==================*/
+
+            _productsRepository.Create(data.Name, data.Description, data.Price, fileUrlPath);
             return Ok();
         }
 

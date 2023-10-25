@@ -10,11 +10,7 @@ namespace WebApi.Models
         public string Description { get; set; } = string.Empty;
         public int Price { get; set; }
 
-        public string Information {
-            get { 
-                return Name + " " + Description;
-            }
-        }
+        public string Image { get; set; } = string.Empty;
 
         public List<ProductImage> Images { get; set; }
     }
