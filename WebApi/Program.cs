@@ -23,6 +23,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ProductImageRepository>();
 builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<OrderRepository>();
 
 builder.Services.AddCors(options =>
 {

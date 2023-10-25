@@ -17,7 +17,6 @@ namespace WebApi.Controllers
             _productsRepository = productRepository;
         }
 
-        [Authorize]
         [HttpGet]
         public IActionResult GetAllProducts()
         {
