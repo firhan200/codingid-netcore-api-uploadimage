@@ -13,6 +13,45 @@ namespace WebApi.Repositories
             _connStr = configuration.GetConnectionString("Default");
         }
 
+        public List<ProductImage> GetAll()
+        {
+            List<ProductImage> productImages = new List<ProductImage>();
+
+            //get connection to database
+            MySqlConnection conn = new MySqlConnection(_connStr);
+            try
+            {
+                conn.Open();
+                // able to query after open
+                // Perform database operations
+                MySqlCommand cmd = new MySqlCommand("SELECT * FROM product_image", conn);
+
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    int id = reader.GetInt32("id");
+                    int productIdFromTable = reader.GetInt32("product_id");
+                    string imageUrl = reader.GetString("image_url");
+
+                    productImages.Add(new ProductImage
+                    {
+                        Id = id,
+                        ProductId = productIdFromTable,
+                        ImageUrl = imageUrl
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            //required
+            conn.Close();
+            Console.WriteLine("Done.");
+
+            return productImages;
+        }
+
         public List<ProductImage> GetByProductIds(List<int> productIds)
         {
             List<ProductImage> productImages = new List<ProductImage>();
@@ -152,6 +191,30 @@ namespace WebApi.Repositories
                 }
 
                 return isSuccess;
+            }
+        }
+
+        public void Delete(int id)
+        {
+            //get connection to database
+            MySqlConnection conn = new MySqlConnection(_connStr);
+            try
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand("DELETE FROM product_image WHERE id=@Id", conn);
+
+                cmd.Parameters.AddWithValue("@Id", id);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                //required
+                conn.Close();
             }
         }
     }

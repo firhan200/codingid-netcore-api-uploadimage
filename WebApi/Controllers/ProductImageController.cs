@@ -83,5 +83,30 @@ namespace WebApi.Controllers
         {
             return Ok(_productImageRepository.TestTransaction());
         }
+
+        [HttpGet("Truncate")]
+        public IActionResult Truncate()
+        {
+            List<ProductImage> productImages = _productImageRepository.GetAll();
+            string rootPath = _webHostEnvironment.WebRootPath;
+
+            foreach (ProductImage productImage in productImages)
+            {
+                if (!string.IsNullOrEmpty(productImage.ImageUrl))
+                {
+                    //TODO: 1. get physical path
+                    string imagePath = Path.Combine(rootPath, productImage.ImageUrl);
+                    //TODO: 2. remove image from server
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
+                    }
+                    //TODO: 3. delete from database
+                    _productImageRepository.Delete(productImage.Id);
+                }
+            }
+
+            return Ok();
+        }
     }
 }

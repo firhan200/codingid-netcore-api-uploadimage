@@ -25,7 +25,7 @@ namespace WebApi.Helpers
             using (var smtp = new SmtpClient())
             {
                 await smtp.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-                await smtp.AuthenticateAsync("noreplytestingcodingid@gmail.com", "abacgnuvklxzfgaq");
+                await smtp.AuthenticateAsync("testingcodingidemail@gmail.com", "kfoqxdznomzkugiv");
                 await smtp.SendAsync(message);
                 await smtp.DisconnectAsync(true);
             }
