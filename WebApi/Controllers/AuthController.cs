@@ -45,5 +45,57 @@ namespace WebApi.Controllers
 
             return Ok();
         }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto data)
+        {
+            //check if email valid
+            User? user = _userRepository.GetByEmail(data.Email);
+            if(user == null)
+            {
+                return NotFound();
+            }
+
+            string key = DateTime.UtcNow.Ticks.ToString() + data.Email;
+            string resetToken = PasswordHelper.EncryptPassword(key);
+
+            //update reset token
+            bool isSuccess = _userRepository.InsertResetPasswordToken(user.Id, resetToken);
+
+            if (!isSuccess)
+            {
+                return Problem();
+            }
+
+            string resetLink = "http://localhost:5173/reset-password/?token="+resetToken;
+
+            await MailHelper.Send(data.Email, "Forgot Password", "Hello "+user.Email+", Your reset password link: "+ resetLink);
+
+            return Ok();
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto data)
+        {
+            //check if email valid
+            User? user = _userRepository.GetByEmailAndResetToken(data.Email, data.Token);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            string hashedPassword = PasswordHelper.EncryptPassword(data.NewPassword);
+
+            bool isResetSuccess = _userRepository.UpdatePassword(user.Id, hashedPassword);
+
+            if (!isResetSuccess)
+            {
+                return Problem();
+            }
+
+            await MailHelper.Send(data.Email, "Reset Password Success", "Hello " + user.Email + ", Your new password is: " + data.NewPassword);
+
+            return Ok();
+        }
     }
 }
