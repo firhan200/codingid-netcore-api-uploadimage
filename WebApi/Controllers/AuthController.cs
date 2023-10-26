@@ -67,7 +67,7 @@ namespace WebApi.Controllers
                 return Problem();
             }
 
-            string resetLink = "http://localhost:5173/reset-password/?token="+resetToken;
+            string resetLink = "http://localhost:5173/reset-password/?email="+data.Email+"&token="+resetToken;
 
             await MailHelper.Send(data.Email, "Forgot Password", "Hello "+user.Email+", Your reset password link: "+ resetLink);
 
